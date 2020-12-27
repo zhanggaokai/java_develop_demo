@@ -1,0 +1,37 @@
+https://www.bilibili.com/video/BV1qy4y1q728    p25讲
+
+//启动nc socket程序  :cd  D:\soft\nc   nc -l -p 60000
+----flink 部署模式:
+standalone : 独立flink集群
+----组件介绍:
+jobmanager:管理Job.  提交的job 交给它.
+taskmanager: 执行任务.
+
+----flink 作业管理命令
+--提交作业到standalone 或 session模式:
+#./bin/flink run -c stream.DataStreamApi.StreamWordCount -p 3 wordcount.jar --host localhost --port 7777
+-p:并行度 -c:主类名
+--提交作业到yan-cluster(per-job模式):
+#./bin/flink run -m yarn-cluster -c stream.DataStreamApi.StreamWordCount -p 3 wordcount.jar --host localhost --port 7777
+
+查看flink job
+#./bin/flink list
+#./bin/flink list -a
+取消提交的flink job
+#./bin/flink cancel jobid
+
+
+----flink 资源介绍:
+All slots:总的并行数
+Free Slots:空闲的并行
+Cpu Cores:cpu数
+Physical MEM: 物理内存数
+JVM Heap Size:JVM堆大小
+Flink Managed MEM: 存放 flink state的内存大小
+
+---- checkPoint vs savePoint
+checkPoint: 由flink 自动存储 state.存储路径 由flink自身决定!
+savePoint :由我们手动设置存储state. 自动设置存储路径!
+
+
+

@@ -25,7 +25,6 @@ import org.apache.flink.table.api.java.StreamTableEnvironment;
  from clicks group by
  (user,TUMBLE_END(cTime,INTERVAL '1' HOUR))
 *  如何配置 flink table 动态表 ?
-
  * */
 public class windows窗口聚合 {
     //创建blink batch
@@ -42,8 +41,5 @@ public class windows窗口聚合 {
     private static EnvironmentSettings flinkStreamSettings=EnvironmentSettings.newInstance().useOldPlanner().inStreamingMode().build();
     private static TableEnvironment flinkStreamEnv=TableEnvironment.create(flinkStreamSettings);
     public static void main(String[] args) {
-
     }
-
-
 }
