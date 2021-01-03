@@ -43,6 +43,11 @@
             <artifactId>flink-csv</artifactId>
             <version>${flink_version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka-0.11_2.12</artifactId>
+            <version>${flink_version}</version>
+        </dependency>
     </dependencies>
 
 </project>

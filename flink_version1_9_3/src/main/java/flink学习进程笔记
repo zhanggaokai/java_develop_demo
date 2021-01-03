@@ -1,4 +1,4 @@
-https://www.bilibili.com/video/BV1qy4y1q728    p25讲
+https://www.bilibili.com/video/BV1qy4y1q728    p36讲
 
 //启动nc socket程序  :cd  D:\soft\nc   nc -l -p 60000
 ----flink 部署模式:
@@ -32,6 +32,5 @@ Flink Managed MEM: 存放 flink state的内存大小
 ---- checkPoint vs savePoint
 checkPoint: 由flink 自动存储 state.存储路径 由flink自身决定!
 savePoint :由我们手动设置存储state. 自动设置存储路径!
-
 
 

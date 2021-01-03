@@ -1,0 +1,8 @@
+zhangsan,24,b
+wangwu,450,b
+wangwu,45,b
+zhangsan,100,b
+lisi,30,g
+chenzhen,56,g
+chenzhen,560,g
+lisi,300,g

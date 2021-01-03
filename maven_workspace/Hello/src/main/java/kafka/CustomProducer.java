@@ -41,7 +41,8 @@ public class CustomProducer {
 
         for(int i=0;i<1000;i++){
             Thread.sleep(5);
-            String str="zhangsan"+","+i+","+String.valueOf(System.currentTimeMillis());
+            //String str="zhangsan"+","+i+","+String.valueOf(System.currentTimeMillis());
+            String str="zhangsan"+",lisi";
             producer.send(new ProducerRecord<String, String>("test2",0,"aa",str));
         }
         //producer.flush();
