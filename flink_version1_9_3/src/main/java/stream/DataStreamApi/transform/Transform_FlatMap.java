@@ -21,6 +21,7 @@ public class Transform_FlatMap {
                 }
             }
         });
+
         flatMapStream.print();
         streamExecutionEnvironment.execute("flatmap_operation");
     }
