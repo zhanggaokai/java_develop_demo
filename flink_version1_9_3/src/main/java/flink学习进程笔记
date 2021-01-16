@@ -34,3 +34,4 @@ checkPoint: 由flink 自动存储 state.存储路径 由flink自身决定!
 savePoint :由我们手动设置存储state. 自动设置存储路径!
 
 更新1
+更新2
