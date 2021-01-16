@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
 
 /**
- * Redis是用的Bahir 连接器
+ * Redis是用的Bahir 连接器. 移交redis
  * */
 public class RedisSink {
     public static void main(String[] args) throws Exception {
