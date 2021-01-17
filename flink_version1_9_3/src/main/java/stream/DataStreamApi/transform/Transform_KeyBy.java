@@ -7,7 +7,9 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 
-/**keyBy:不是一个算子.把数据生成hash值,然后进行mod取模。分发给不同的分区，再配合聚合算子进行计算*/
+/**keyBy:不是一个算子.把数据生成hash值,然后进行mod取模。分发给不同的分区，再配合聚合算子进行计算
+ * 按照keyBy分化数据. Stream对应的数据类型必须是 Tuple,PoJo
+ * */
 public class Transform_KeyBy {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment streamExecutionEnvironment=StreamExecutionEnvironment.getExecutionEnvironment();
