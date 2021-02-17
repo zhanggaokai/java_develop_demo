@@ -1,4 +1,4 @@
-https://www.bilibili.com/video/BV1qy4y1q728    p47讲
+https://www.bilibili.com/video/BV1qy4y1q728    p61讲  看到中间了!
 
 //启动nc socket程序  :cd  D:\soft\nc   nc -l -p 60000
 ----flink 部署模式:
@@ -31,7 +31,7 @@ Flink Managed MEM: 存放 flink state的内存大小
 
 ---- checkPoint vs savePoint
 checkPoint: 由flink 自动存储 state.存储路径 由flink自身决定!
-savePoint :由我们手动设置存储state. 自动设置存储路径!
+savePoint :由我们手动设置存储state. 手动设置存储路径!
 
 *********************************
  2> (azkaban,1)
@@ -39,4 +39,9 @@ savePoint :由我们手动设置存储state. 自动设置存储路径!
 这里的
 2>
 1>表示多线程的并行度
+*********************************
+检查点?
+就是计算结果在某个时间点的快照. flink自动配置.默认情况检查点是关闭的。需要启动开启检查点.
+保存点?
+手动配置保存点.
 *********************************

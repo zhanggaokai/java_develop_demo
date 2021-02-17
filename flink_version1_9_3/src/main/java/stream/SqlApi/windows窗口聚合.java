@@ -1,4 +1,4 @@
-package stream.sql编程;
+package stream.SqlApi;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
