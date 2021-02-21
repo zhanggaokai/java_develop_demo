@@ -1,6 +1,9 @@
 package stream.TableApi;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.EnvironmentSettings;
@@ -10,6 +13,7 @@ import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.descriptors.Csv;
 import org.apache.flink.table.descriptors.FileSystem;
+import org.apache.flink.table.descriptors.Kafka;
 import org.apache.flink.table.descriptors.Schema;
 import org.apache.flink.types.Row;
 import stream.DataStreamApi.watermark.Person;
@@ -93,7 +97,7 @@ public class Example {
 
     }
     /**
-     * 表模式
+     * 表模式:connect操作文件系统
      tableEnv
      .connect(...)  //定义表的数据来源,和外部系统建立连接
      .withFormat(...)  //定义数据格式化方法
@@ -113,9 +117,7 @@ public class Example {
      //sink:将计算结果写入输出表中
      tableEnv.connect(外部系统例如mysql).createTemporaryTable("outputTable");
      result.insertInto("outputTable");
-
      * */
-    // 操作文件系统
     public void tableSchemaOptFile() throws Exception {
         StreamExecutionEnvironment streamExecutionEnvironment=StreamExecutionEnvironment.getExecutionEnvironment();
         //设置并行度为1
@@ -160,9 +162,100 @@ public class Example {
         blinkStreamTableEnv.toRetractStream(resultTable,Row.class).print("汇总");
         streamExecutionEnvironment.execute();
     }
+    /**
+     * 表模式 connect连接kafka 输出kafka
+     * 输入数据:name,age,sex
+     zhangsan,24,b
+     wangwu,450,b
+     wangwu,45,b
+     zhangsan,100,b
+     lisi,30,g
+     chenzhen,56,g
+     chenzhen,560,g
+     lisi,300,g
+     * */
+    public void tableSchemaOptKafka() throws Exception {
+        StreamExecutionEnvironment streamExecutionEnvironment=StreamExecutionEnvironment.getExecutionEnvironment();
+        //设置并行度为1
+        streamExecutionEnvironment.setParallelism(1);
+        //使用新的planner的流环境
+        EnvironmentSettings blinkStreamSettings = EnvironmentSettings.newInstance()
+                .inStreamingMode()
+                .useBlinkPlanner()
+                .build();
+        StreamTableEnvironment blinkStreamTableEnv = StreamTableEnvironment.create(streamExecutionEnvironment, blinkStreamSettings);
+        //读取source kafka
+        blinkStreamTableEnv.connect(new Kafka()
+                .version("0.11")
+                .topic("source_person")
+                .property("zookeeper.connect","localhost:2181")
+                .property("bootstrap.servers","localhost:9092")
+
+        )
+                .withFormat(new Csv())
+                .withSchema(new Schema().field("name", DataTypes.STRING())
+                        .field("age",DataTypes.INT())
+                        .field("sex",DataTypes.STRING())
+                )
+                .createTemporaryTable("inputTable");
+//        Table inputTable1=blinkStreamTableEnv.from("inputTable");
+
+        //sql 操作
+        Table tableSql=blinkStreamTableEnv.sqlQuery("select sex,age  from inputTable where sex='b'");
+
+        //写入sink
+        blinkStreamTableEnv.connect(new Kafka()
+                .version("0.11")
+                .topic("sink_person")
+                .property("zookeeper.connect","localhost:2181")
+                .property("bootstrap.servers","localhost:9092")
+
+        )
+                .withFormat(new Csv())
+                .withSchema(new Schema().field("sex", DataTypes.STRING())
+                        .field("age",DataTypes.INT())
+                )
+                .createTemporaryTable("outputTable");
+        tableSql.insertInto("outputTable");
+        streamExecutionEnvironment.execute();
+    }
+    /**
+     * 表模式操作: 插入到mysql
+     String sinkDDL="create table jdbcOutputTable("+
+     "id varchar(20) not null, "+
+     "cnt bigint not null "+
+     ") with (" +
+     " 'connector.type' = 'jdbc', "+
+     " 'connector.url' = 'jdbc:mysql://localhost:3306/test', "+
+     " 'connector.table' = 'jdbcOutputTable', "+
+     " 'connector.driver' = 'com.mysql.jdbc.Driver', "+
+     " 'connector.username' = 'root', "+
+     " 'connector.password' = 'root')";
+     ;
+     tableEnv.sqlUpdate(sinkDDL); //执行DDL创建表
+     sql.insertInto("jdbcOutputTable");
+
+     * */
+    /**在列中指定proctime*/
+    public void tableSchemaOptProcTime() throws Exception {
+        StreamExecutionEnvironment streamEnv=StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tableEnv=StreamTableEnvironment.create(streamEnv);
+        DataStreamSource<String> stringDataStreamSource = streamEnv.readTextFile("D:\\work\\java\\flink_version1_9_3\\src\\main\\resources\\person.txt");
+        SingleOutputStreamOperator<PersonTxt> dataStream = stringDataStreamSource.map(new MapFunction<String, PersonTxt>() {
+            @Override
+            public PersonTxt map(String s) throws Exception {
+                String[] str = s.split(",");
+                return new PersonTxt(str[0], Integer.parseInt(str[1]), str[2]);
+            }
+        });
+        Table person=tableEnv.fromDataStream(dataStream,"name,age,sex,pt.proctime");
+        tableEnv.toAppendStream(person,Row.class).print();
+        streamEnv.execute();
+    }
     public static void main(String[] args) throws Exception {
         Example example=new Example();
-        example.tableSchemaOptFile();
+        example.tableSchemaOptProcTime();
+//        example.tableSchemaOptKafka();
 //        example.envOpt();
 //        example.tableApiOpt();
     }
